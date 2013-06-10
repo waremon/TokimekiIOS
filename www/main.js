@@ -1,7 +1,11 @@
 enchant();
 
 var winHeight = window.innerHeight
-var audio = new Audio('setagaya.wav');
+var audio_back = new Audio('cosmo.mp3');
+var audio_flush = new Audio('flush_back.mp3');
+var audio_baby = new Audio('hey_baby.mp3');
+var audio_setagaya = new Audio('setagaya.mp3');
+var Game_Music = -1;
 
 var width = 640;
 var height = 820;
@@ -74,6 +78,30 @@ function init_const() {
     Your_Point = 0;
     Usa_Point = 0;
 }
+
+Touch = enchant.Class.create(Sprite, {
+	initialize: function() {
+		var game = enchant.Game.instance;
+		Sprite.call(this, 500, 112);
+        this.image = game.assets['touch.png'];
+        this.back = 0;
+        this.count = 0;
+        this.x = (width - 500)/2;
+        this.y = (height - 112)/2;
+        this.addEventListener('enterframe', function() {
+            if(this.count%10 == 0) {
+                if (this.back == 0) {
+                    this.image = game.assets['touch_back.png'];
+                    this.back = 1;
+                } else {
+                    this.image = game.assets['touch.png'];
+                    this.back = 0;
+                }
+            }
+            this.count++;
+		});
+	}
+});
 
 Card1 = enchant.Class.create(Sprite, {
 	initialize: function() {
@@ -260,9 +288,18 @@ GameOver = enchant.Class.create(Sprite, {
         this.x = (width-500)/2;
         this.y = (height-667)/2;
         this.addEventListener('touchstart', function() {
-            if(!audio.ended){
-                audio.pause();
-                audio.currentTime = 0;
+            init_const();
+            if(!audio_baby.ended && Game_Music == 1){
+                audio_baby.pause();
+                audio_baby.currentTime = 0;
+            }
+            if(!audio_flush.ended && Game_Music == 0){
+                audio_flush.pause();
+                audio_flush.currentTime = 0;
+            }
+            if(!audio_setagaya.ended && Game_Music == 2){
+                audio_setagaya.pause();
+                audio_setagaya.currentTime = 0;
             }
             game.replaceScene(game.menuScene());
 		});
@@ -278,11 +315,19 @@ Icon_Back = enchant.Class.create(Sprite, {
         this.y = 0;
         this.addEventListener('touchstart', function() {
             init_const();
-            game.replaceScene(game.menuScene());
-            if(!audio.ended){
-                audio.pause();
-                audio.currentTime = 0;
+            if(!audio_baby.ended && Game_Music == 1){
+                audio_baby.pause();
+                audio_baby.currentTime = 0;
             }
+            if(!audio_flush.ended && Game_Music == 0){
+                audio_flush.pause();
+                audio_flush.currentTime = 0;
+            }
+            if(!audio_setagaya.ended && Game_Music == 2){
+                audio_setagaya.pause();
+                audio_setagaya.currentTime = 0;
+            }
+            game.replaceScene(game.menuScene());
 		});
 	}
 });
@@ -320,7 +365,6 @@ function unopend_card_num(card_usa_think, card_opend, card1_num) {
 	while (card_opend[rand] == 1 || rand == First_Card_Num) {
 		rand = (Math.floor(Math.random()*SelectedCardNum));
 	}
-//	console.log(rand);
 	return rand;
 }
 
@@ -329,13 +373,14 @@ window.onload = function() {
 	//game.fps = 10;
 	game.preload('card_front_s.png', 'card_front_s_32.png', 'card1_back_s_32.png',
      'card1_back_s.png', 'train_s.png', 'usa_s.png', 'top_sample.png', 'icon_shinkei.png',
-     'usa1.png', 'usa2.png', 'usa3.png', 'selected1.png', 'selected2.png',
+     'usa1.png', 'usa2.png', 'usa3.png', 'selected1.png', 'selected2.png', 'touch.png', 'touch_back.png',
      'card16.png', 'card32.png', 'selected_card1.png', 'selected_card2.png', 'game1_start.png',
      'back_sinkei.png', 'which_usa.png', 'which_card.png', 'point_back.png', 'points.png',
      'enemy_usa1.png', 'enemy_usa2.png', 'enemy_usa3.png', 'draw.png', 'you_win.png', 'you_lose.png',
      'icon_homepage.png', 'icon_facebook.png', 'icon_twitter.png', 'back.png',
      'card_front_s_ip4.png', 'card1_back_s_ip4.png', 'card_front_s_32_ip4.png', 'card1_back_s_32_ip4.png');
 	game.onload = function() {
+        audio_back.play();
 		game.pushScene(game.topScene());
 	};
 
@@ -344,15 +389,23 @@ window.onload = function() {
 		var bg = new Sprite(width, height);
 		bg.image = game.assets['top_sample.png'];
 		scene.addChild(bg);
+        
+        var top = new Touch();
+        scene.addChild(top);
 
 		scene.addEventListener(Event.TOUCH_START, function(e) {
 			game.replaceScene(game.menuScene());
 		});
-
+        
+        scene.addEventListener('enterframe', function(e) {
+            if(audio_back.ended || audio_back.paused){
+                audio_back.play();
+            }
+        });
 		return scene;
 	}
 
-	game.menuScene = function(){
+	game.menuScene = function(){    
 		var scene = new Scene();
 		var bg = new Sprite(width, height);
 		bg.image = game.assets['top_sample.png'];
@@ -409,6 +462,10 @@ window.onload = function() {
 		});
         
         scene.addEventListener('enterframe', function() {
+            if(audio_back.ended || audio_back.paused){
+                audio_back.play();
+            }
+            
             if(is_icon_ready == 0) {
                 icon_homepage.x = (icon_homepage.x - Math.floor((width-3*ICON_WIDTH)/4))/1.2;
                 icon_facebook.x = icon_homepage.x + Math.floor((width-3*ICON_WIDTH)/4) + ICON_WIDTH;
@@ -495,6 +552,10 @@ window.onload = function() {
         scene.addChild(selected_card_frame);
         
         scene.addEventListener('enterframe', function() {
+            if(audio_back.ended || audio_back.paused){
+                audio_back.play();
+            }
+        
             if (SelectedUsa == 1) {
                 selected_frame.x = usa1_icon.x;
                 selected_frame.y = usa1_icon.y;
@@ -518,6 +579,8 @@ window.onload = function() {
         var start_button = new Game1Start();
         scene.addChild(start_button);
         start_button.addEventListener(Event.TOUCH_START, function(e) {
+            audio_back.pause();
+            audio_back.currentTime = 0;
 			game.replaceScene(game.game1Scene());
 		});
         
@@ -525,7 +588,15 @@ window.onload = function() {
     };
 
 	game.game1Scene = function() {
-        audio.play();
+        Game_Music = Math.floor(Math.random()*3);
+        if(Game_Music == 0) {
+            audio_flush.play();
+        } else if (Game_Music == 1) {
+            audio_baby.play();
+        } else {
+            audio_setagaya.play();
+        }        
+        
         var scene = new Scene();
 		var bg = new Sprite(width, height);
 		bg.image = game.assets['back_sinkei.png'];
@@ -610,8 +681,12 @@ window.onload = function() {
         
         
 		scene.addEventListener('enterframe', function() {
-            if(audio.ended){
-                audio.play();
+            if(Game_Music == 0) {
+                if (audio_flush.ended || audio_flush.paused) { audio_flush.play() };
+            } else if (Game_Music == 1) {
+                if (audio_baby.ended || audio_baby.paused) { audio_baby.play() };
+            } else {
+                if (audio_setagaya.ended || audio_setagaya.paused) { audio_setagaya.play() };
             }
         
             if ((YouPointNum + UsaPointNum) == (SelectedCardNum/2) || is_over == 1) {
