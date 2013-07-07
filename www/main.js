@@ -1,6 +1,6 @@
 enchant();
 
-var winHeight = window.innerHeight
+var winHeight = window.innerHeight;
 var audio_back = new Audio('cosmo.mp3');
 var audio_flush = new Audio('flush_back.mp3');
 var audio_baby = new Audio('hey_baby.mp3');
