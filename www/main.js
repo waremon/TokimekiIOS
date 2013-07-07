@@ -371,6 +371,7 @@ function unopend_card_num(card_usa_think, card_opend, card1_num) {
 window.onload = function() {
 	var game = new Game(width, height);
 	//game.fps = 10;
+    // for shinkeisuijaku
 	game.preload('card_front_s.png', 'card_front_s_32.png', 'card1_back_s_32.png',
      'card1_back_s.png', 'train_s.png', 'usa_s.png', 'top_sample.png', 'icon_shinkei.png',
      'usa1.png', 'usa2.png', 'usa3.png', 'selected1.png', 'selected2.png', 'touch.png', 'touch_back.png',
@@ -379,6 +380,8 @@ window.onload = function() {
      'enemy_usa1.png', 'enemy_usa2.png', 'enemy_usa3.png', 'draw.png', 'you_win.png', 'you_lose.png',
      'icon_homepage.png', 'icon_facebook.png', 'icon_twitter.png', 'back.png',
      'card_front_s_ip4.png', 'card1_back_s_ip4.png', 'card_front_s_32_ip4.png', 'card1_back_s_32_ip4.png');
+    // for shooting
+    game.preload('shooting/fire_me.png', 'shooting/fire_enemy.png', 'shooting/shooting_back1.png', 'shooting/shooting_back2.png');
 	game.onload = function() {
         audio_back.play();
 		game.pushScene(game.topScene());
@@ -435,6 +438,12 @@ window.onload = function() {
         icon_shinkei.y = icon_homepage.y + ICON_HEIGHT;
         scene.addChild(icon_shinkei);
         
+        var icon_shooting = new Icon();
+        icon_shooting.image = game.assets['icon_shinkei.png'];
+        icon_shooting.x = icon_facebook.x;
+        icon_shooting.y = icon_facebook.y + ICON_HEIGHT;
+        scene.addChild(icon_shooting);
+        
         var is_icon_ready = 0;
         
         icon_homepage.addEventListener(Event.TOUCH_START, function(e) {
@@ -461,6 +470,12 @@ window.onload = function() {
             }
 		});
         
+        icon_shooting.addEventListener(Event.TOUCH_START, function(e) {
+            if(is_icon_ready == 1){
+                game.replaceScene(game.game2SelectScene());
+            }
+		});
+        
         scene.addEventListener('enterframe', function() {
             if(audio_back.ended || audio_back.paused){
                 audio_back.play();
@@ -471,11 +486,13 @@ window.onload = function() {
                 icon_facebook.x = icon_homepage.x + Math.floor((width-3*ICON_WIDTH)/4) + ICON_WIDTH;
                 icon_twitter.x = icon_facebook.x + Math.floor((width-3*ICON_WIDTH)/4) + ICON_WIDTH;
                 icon_shinkei.x = icon_homepage.x;
+                icon_shooting.x = icon_facebook.x;
                 if((icon_homepage.x - Math.floor((width-3*ICON_WIDTH)/4)) <= 1) {
                     icon_homepage.x = Math.floor((width-3*ICON_WIDTH)/4);
                     icon_facebook.x = icon_homepage.x + Math.floor((width-3*ICON_WIDTH)/4) + ICON_WIDTH;
                     icon_twitter.x = icon_facebook.x + Math.floor((width-3*ICON_WIDTH)/4) + ICON_WIDTH;
                     icon_shinkei.x = icon_homepage.x;
+                    icon_shooting.x = icon_facebook.x;
                     is_icon_ready = 1;
                 }
             }
@@ -859,6 +876,18 @@ window.onload = function() {
 
 		return scene;
 	}
+    
+    game.game2SelectScene = function() {
+        var scene = new Scene();
+        shooting_menu(game, scene);
+        return scene;
+    }
+    
+    game.game2Scene = function() {
+        var scene = new Scene();
+        shooting_start(game, scene);
+        return scene;
+    }
 
 	game.start();
 }
