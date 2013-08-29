@@ -381,7 +381,12 @@ window.onload = function() {
      'icon_homepage.png', 'icon_facebook.png', 'icon_twitter.png', 'back.png',
      'card_front_s_ip4.png', 'card1_back_s_ip4.png', 'card_front_s_32_ip4.png', 'card1_back_s_32_ip4.png');
     // for shooting
-    game.preload('shooting/fire_me.png', 'shooting/fire_enemy.png', 'shooting/shooting_back1.png', 'shooting/shooting_back2.png');
+    game.preload('shooting/fire_me.png', 'shooting/fire_enemy.png', 'shooting/shooting_back1.png',
+    'shooting/shooting_back2.png', 'shooting/shooting_start.png',
+    'shooting/shooting_game_over.png', 'shooting/shooting_clear.png', 'shooting/hikari.png', 'shooting/sakiwo.png',
+    'shooting/shunsuke.png', 'shooting/shingo.png', 'shooting/airi.png', 'shooting/shingo_mini.png', 'shooting/airi_hat.png',
+    'shooting/shooting_point.png','shooting/hikari_head.png','shooting/switch.png', 'shooting/hikari_head_light.png',
+    'shooting/shooting_title.png', 'shooting/start_b.png', 'shooting/enemy_b.png', 'shooting/how_b.png', 'shooting/high_score.png');
 	game.onload = function() {
         audio_back.play();
 		game.pushScene(game.topScene());
@@ -880,6 +885,18 @@ window.onload = function() {
     game.game2SelectScene = function() {
         var scene = new Scene();
         shooting_menu(game, scene);
+        return scene;
+    }
+
+    game.game2EnemyScene = function() {
+        var scene = new Scene();
+        enemy_menu(game, scene);
+        return scene;
+    }
+    
+    game.game2HowScene = function() {
+        var scene = new Scene();
+        how_menu(game, scene);
         return scene;
     }
     
