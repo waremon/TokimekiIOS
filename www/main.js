@@ -386,7 +386,11 @@ window.onload = function() {
     'shooting/shooting_game_over.png', 'shooting/shooting_clear.png', 'shooting/hikari.png', 'shooting/sakiwo.png',
     'shooting/shunsuke.png', 'shooting/shingo.png', 'shooting/airi.png', 'shooting/shingo_mini.png', 'shooting/airi_hat.png',
     'shooting/shooting_point.png','shooting/hikari_head.png','shooting/switch.png', 'shooting/hikari_head_light.png',
-    'shooting/shooting_title.png', 'shooting/start_b.png', 'shooting/enemy_b.png', 'shooting/how_b.png', 'shooting/high_score.png');
+    'shooting/shooting_title.png', 'shooting/start_b.png', 'shooting/enemy_b.png', 'shooting/how_b.png', 'shooting/high_score.png',
+    'shooting/q_pannel.png','shooting/hikari_pannel.png','shooting/usa_pannel.png','shooting/sakiwo_pannel.png',
+    'shooting/shunsuke_pannel.png','shooting/shingo_pannel.png','shooting/airi_pannel.png', 'shooting/hikari_big_pannel.png',
+    'shooting/usa_big_pannel.png', 'shooting/sakiwo_big_pannel.png', 'shooting/shunsuke_big_pannel.png', 'shooting/shingo_big_pannel.png',
+    'shooting/airi_big_pannel.png');
 	game.onload = function() {
         audio_back.play();
 		game.pushScene(game.topScene());

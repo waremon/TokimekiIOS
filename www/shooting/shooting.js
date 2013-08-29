@@ -286,6 +286,10 @@ function set_high_score(score) {
     localStorage.setItem('high_score', score);
 }
 
+function is_appeared(enemy) {
+    return 1;
+}
+
 ////////////////////////////////
 // main functions
 ////////////////////////////////
@@ -444,6 +448,97 @@ function enemy_menu(game, scene) {
         game.replaceScene(game.game2SelectScene());
     });
     scene.addChild(back_b);
+    
+    // enemy pannels
+    var enemy_pannel = new Array(6);
+    var big_pannel = new Sprite(500, 750);
+    big_pannel.x = (width - big_pannel.width)/2;
+    big_pannel.y = (height - big_pannel.height)/2;
+    for(var i = 0; i < enemy_pannel.length; i++) {
+        enemy_pannel[i] = new Sprite(250, 250);
+        enemy_pannel[i].image = game.assets['shooting/q_pannel.png'];
+        if (i == 0) {
+            enemy_pannel[i].x = (width - enemy_pannel[i].width*2)/3;
+            enemy_pannel[i].y = (height - enemy_pannel[i].height*3)/4;
+            if(is_appeared('hikari')) {
+                enemy_pannel[i].image = game.assets['shooting/hikari_pannel.png'];
+                enemy_pannel[i].addEventListener('touchstart', function() {
+                    big_pannel.image = game.assets['shooting/hikari_big_pannel.png'];
+                    big_pannel.addEventListener('touchstart', function() {
+                        scene.removeChild(this);
+                    });
+                    scene.addChild(big_pannel);
+                });
+            }
+        } else if (i == 1) {
+            enemy_pannel[i].x = enemy_pannel[i].width + (width - enemy_pannel[i].width*2)/3*2;
+            enemy_pannel[i].y = (height - enemy_pannel[i].height*3)/4;
+            if(is_appeared('usa')) {
+                enemy_pannel[i].image = game.assets['shooting/usa_pannel.png'];
+                enemy_pannel[i].addEventListener('touchstart', function() {
+                    big_pannel.image = game.assets['shooting/usa_big_pannel.png'];
+                    big_pannel.addEventListener('touchstart', function() {
+                        scene.removeChild(this);
+                    });
+                    scene.addChild(big_pannel);
+                });
+            }
+        } else if (i == 2) {
+            enemy_pannel[i].x = (width - enemy_pannel[i].width*2)/3;
+            enemy_pannel[i].y = enemy_pannel[i].height + 2*(height - enemy_pannel[i].height*3)/4;
+            if(is_appeared('sakiwo')) {
+                enemy_pannel[i].image = game.assets['shooting/sakiwo_pannel.png'];
+                enemy_pannel[i].addEventListener('touchstart', function() {
+                    big_pannel.image = game.assets['shooting/sakiwo_big_pannel.png'];
+                    big_pannel.addEventListener('touchstart', function() {
+                        scene.removeChild(this);
+                    });
+                    scene.addChild(big_pannel);
+                });
+            }
+        } else if (i == 3) {
+            enemy_pannel[i].x = enemy_pannel[i].width + (width - enemy_pannel[i].width*2)/3*2;
+            enemy_pannel[i].y = enemy_pannel[i].height + 2*(height - enemy_pannel[i].height*3)/4;
+            if(is_appeared('shunsuke')) {
+                enemy_pannel[i].image = game.assets['shooting/shunsuke_pannel.png'];
+                enemy_pannel[i].addEventListener('touchstart', function() {
+                    big_pannel.image = game.assets['shooting/shunsuke_big_pannel.png'];
+                    big_pannel.addEventListener('touchstart', function() {
+                        scene.removeChild(this);
+                    });
+                    scene.addChild(big_pannel);
+                });
+            }
+        } else if (i == 4) {
+            enemy_pannel[i].x = (width - enemy_pannel[i].width*2)/3;
+            enemy_pannel[i].y = 2*enemy_pannel[i].height + 3*(height - enemy_pannel[i].height*3)/4;
+            if(is_appeared('shingo')) {
+                enemy_pannel[i].image = game.assets['shooting/shingo_pannel.png'];
+                enemy_pannel[i].addEventListener('touchstart', function() {
+                    big_pannel.image = game.assets['shooting/shingo_big_pannel.png'];
+                    big_pannel.addEventListener('touchstart', function() {
+                        scene.removeChild(this);
+                    });
+                    scene.addChild(big_pannel);
+                });
+            }
+        } else if (i == 5) {
+            enemy_pannel[i].x = enemy_pannel[i].width + (width - enemy_pannel[i].width*2)/3*2;
+            enemy_pannel[i].y = 2*enemy_pannel[i].height + 3*(height - enemy_pannel[i].height*3)/4;
+            if(is_appeared('airi')) {
+                enemy_pannel[i].image = game.assets['shooting/airi_pannel.png'];
+                enemy_pannel[i].addEventListener('touchstart', function() {
+                    big_pannel.image = game.assets['shooting/airi_big_pannel.png'];
+                    big_pannel.addEventListener('touchstart', function() {
+                        scene.removeChild(this);
+                    });
+                    scene.addChild(big_pannel);
+                });
+            }
+        }
+        scene.addChild(enemy_pannel[i]);
+    }
+    
     return scene;
 }
 
