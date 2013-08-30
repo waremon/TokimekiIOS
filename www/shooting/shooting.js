@@ -658,6 +658,12 @@ function shooting_start (game, scene) {
             .scaleBy(1/3, 1);
     });
     scene.addChild(hikari_head_switch);
+    // hikari dead ring
+    var hikari_dead_ring = new Array(8);
+    for (var i = 0; i < hikari_dead_ring.length; i++) {
+        hikari_dead_ring[i] = new Sprite(30, 30);
+        hikari_dead_ring[i].image = game.assets['shooting/dead_ring.png'];
+    }
     
     ///////////////////////////
     // usa
@@ -965,6 +971,16 @@ function shooting_start (game, scene) {
             
             // after gameover or clear
             if (NOW == "GAMEOVER") {
+                // display ring
+                if (gameover_count == 0) {
+                    for(var i = 0; i < hikari_dead_ring.length; i++) {
+                        hikari_dead_ring[i].x = hikari.x + (hikari.width - hikari_dead_ring[i].width)/2;
+                        hikari_dead_ring[i].y = hikari.y + (hikari.height - hikari_dead_ring[i].height)/2
+                        console.log(Math.sin(Math.PI/2*i));
+                        hikari_dead_ring[i].tl.moveBy(500*Math.sin(Math.PI/4*i), 500*Math.cos(Math.PI/4*i), 90);
+                        scene.addChild(hikari_dead_ring[i]);
+                    }
+                }
                 gameover_count += 2;
                 if (gameover_count == 90) {
                     gameover_count = 0;
