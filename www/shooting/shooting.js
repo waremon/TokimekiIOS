@@ -4,6 +4,7 @@
 
 var Is_Touch = 0;
 var HIKARI_FIRE_NUM = 10;
+var HIKARI_BIG_FIRE_NUM = 3;
 var SAKIWO_FIRE_NUM = 10;
 var SHINGO_FIRE_NUM = 10;
 var AIRI_FIRE_NUM = 10;
@@ -189,7 +190,7 @@ Clear = enchant.Class.create(Sprite, {
     }
 });
 
-GameOver = enchant.Class.create(Sprite, {
+Shooting_GameOver = enchant.Class.create(Sprite, {
 	initialize: function() {
 		var game = enchant.Game.instance;
 		Sprite.call(this, 450, 70);
@@ -388,21 +389,24 @@ function shooting_menu(game, scene) {
     });
     // device motion
     var angle  = 0;
-    var angle1 = 0;
-    var angle2 = 0;
-    var angle3 = 0;
-    var angle4 = 0;
+    var past_angle = new Array(10);
+    for (var i = 0; i < past_angle.length; i++) {
+        past_angle[i] = 0;
+    }
     window.addEventListener("devicemotion", function(e){
-        angle4 = angle3;
-        angle3 = angle2;
-        angle2 = angle1;
-        angle1 = (Math.floor(100*e.accelerationIncludingGravity.x)/100+angle)/2;
-        if (width/2/3*angle1 > 290) {
-            angle1 = 290*2*3/width;
-        } else if (width/2/3*angle1 < -290) {
-            angle1 = -290*2*3/width;
+        for (var i = past_angle.length-1; i > 0; i--) {
+            past_angle[i] = past_angle[i-1];
         }
-        angle  = (angle1 + angle2 + angle3 + angle4)/4;
+        past_angle[0] = (Math.floor(100*e.accelerationIncludingGravity.x)/100+angle)/2;
+        if (width/2/3*past_angle[0] > 290) {
+            past_angle[0] = 290*2*3/width;
+        } else if (width/2/3*past_angle[0] < -290) {
+            past_angle[0] = -290*2*3/width;
+        }
+        angle = 0;
+        for (var i = 0; i < past_angle.length; i++) {
+            angle += past_angle[i]/past_angle.length;
+        }
         hikari.x = width/2 - hikari.width/2 + width/2/3*angle;
     }, false);
     
@@ -600,7 +604,7 @@ function shooting_start (game, scene) {
     start.tl.hide().moveTo((width-start.width)/2, (height-start.height)/2, 1).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).removeFromScene();
     scene.addChild(start);
     var clear = new Clear();
-    var gameover = new GameOver();
+    var gameover = new Shooting_GameOver();
     
     ///////////////////////////
     // hikari
@@ -636,26 +640,33 @@ function shooting_start (game, scene) {
         hikari_fire[i] = new Hikari_Fire();
     }
     // hikari head switch
-    var hikari_head_switch = new Sprite(50, 50);
+    var HIKARI_BIG_FIRE_NUM = 9;
+    var hikari_head_switch = new Sprite(60, 60);
+    var hikari_head_last_hit_frame = 0;
     hikari_head_switch.image = game.assets['shooting/switch.png'];
-    hikari_head_switch.x = 0;
-    hikari_head_switch.y = height - hikari_head_switch.height;
+    hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
+    hikari_head_switch.x = hikari_head_switch.width/2;
+    hikari_head_switch.y = height - hikari_head_switch.height*3/2;
     hikari_head_switch.addEventListener('touchstart', function() {
-        hikari_head_count = game.frame;
-        hikari_head.tl
-            .moveTo(hikari.x, hikari.y, 1)
-            .scaleBy(6/5, 5, SIN_EASEINOUT)
-            .scaleBy(5/6, 5, SIN_EASEINOUT)
-            .scaleBy(7/5, 5, SIN_EASEINOUT)
-            .scaleBy(5/7, 5, SIN_EASEINOUT)
-            .scaleBy(8/5, 5, SIN_EASEINOUT)
-            .moveTo(hikari.x, -width, 50, EXPO_EASEIN)
-            .scaleBy(5/8, 1);
-        hikari_head_light.tl
-            .moveTo(hikari.x, hikari.y, 1)
-            .scaleBy(3, 25)
-            .moveTo(hikari.x, -width, 50, EXPO_EASEIN)
-            .scaleBy(1/3, 1);
+        if (hikari_head_count + 75 < game.frame && HIKARI_BIG_FIRE_NUM > 0) {
+            HIKARI_BIG_FIRE_NUM--;
+            hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
+            hikari_head_count = game.frame;
+            hikari_head.tl
+                .moveTo(hikari.x, hikari.y, 1)
+                .scaleBy(6/5, 5, SIN_EASEINOUT)
+                .scaleBy(5/6, 5, SIN_EASEINOUT)
+                .scaleBy(7/5, 5, SIN_EASEINOUT)
+                .scaleBy(5/7, 5, SIN_EASEINOUT)
+                .scaleBy(8/5, 5, SIN_EASEINOUT)
+                .moveTo(hikari.x, -width, 50, EXPO_EASEIN)
+                .scaleBy(5/8, 1);
+            hikari_head_light.tl
+                .moveTo(hikari.x, hikari.y, 1)
+                .scaleBy(3, 25)
+                .moveTo(hikari.x, -width, 50, EXPO_EASEIN)
+                .scaleBy(1/3, 1);
+        }
     });
     scene.addChild(hikari_head_switch);
     // hikari dead ring
@@ -682,20 +693,6 @@ function shooting_start (game, scene) {
         scene.addChild(usa[i]);
         s *= -1;
     }
-    // usa2
-//    var usa2 = new Array(USA2_NUM);
-//    for(var i = 0; i < usa2.length; i++) {
-//        usa2[i] = new Usa2();
-//        set_usa_motin2(usa2[i]);
-//        scene.addChild(usa2[i]);
-//    }
-    // usa3
-//    var usa3 = new Array(USA2_NUM);
-//    for(var i = 0; i < usa3.length; i++) {
-//        usa3[i] = new Usa3();
-//        set_usa_motin3(usa3[i]);
-//        scene.addChild(usa3[i]);
-//    }
     
     //////////////////////////
     // boss
@@ -736,21 +733,24 @@ function shooting_start (game, scene) {
     /////////////////////////
     // device motion
     var angle  = 0;
-    var angle1 = 0;
-    var angle2 = 0;
-    var angle3 = 0;
-    var angle4 = 0;
+    var past_angle = new Array(10);
+    for (var i = 0; i < past_angle.length; i++) {
+        past_angle[i] = 0;
+    }
     window.addEventListener("devicemotion", function(e){
-        angle4 = angle3;
-        angle3 = angle2;
-        angle2 = angle1;
-        angle1 = (Math.floor(100*e.accelerationIncludingGravity.x)/100+angle)/2;
-        if (width/2/3*angle1 > 290) {
-            angle1 = 290*2*3/width;
-        } else if (width/2/3*angle1 < -290) {
-            angle1 = -290*2*3/width;
+        for (var i = past_angle.length-1; i > 0; i--) {
+            past_angle[i] = past_angle[i-1];
         }
-        angle  = (angle1 + angle2 + angle3 + angle4)/4;
+        past_angle[0] = (Math.floor(100*e.accelerationIncludingGravity.x)/100+angle)/2;
+        if (width/2/3*past_angle[0] > 290) {
+            past_angle[0] = 290*2*3/width;
+        } else if (width/2/3*past_angle[0] < -290) {
+            past_angle[0] = -290*2*3/width;
+        }
+        angle = 0;
+        for (var i = 0; i < past_angle.length; i++) {
+            angle += past_angle[i]/past_angle.length;
+        }
         hikari.x = width/2 - hikari.width/2 + width/2/3*angle;
         if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
             hikari_head.x = hikari.x;
@@ -851,6 +851,56 @@ function shooting_start (game, scene) {
             }
         }
         if(count % 2 == 0) {
+            // hikari_big_fire vs usa & boss
+            if (hikari_head_count + 75 > game.frame) {
+                for (var i = 0; i < usa.length; i++) {
+                    if (is_collisioned(hikari_head, usa[i]) == 1 && NOW == "PLAYING") {
+                        if(usa[i].hp <= 10) {
+                            POINT+=10;
+                            // lose usa motion
+                            var lose_usa = new Usa();
+                            lose_usa.x = usa[i].x;
+                            lose_usa.y = usa[i].y;
+                            scene.addChild(lose_usa);
+                            lose_usa.tl.moveTo(Math.floor(2*(width-lose_usa.width)*Math.random()), -usa[0].height ,30).and().rotateBy(1800, 30).removeFromScene();
+                            // usa clear
+                            usa[i].tl.clear();
+                            set_usa_motin(usa[i], s);
+                            s *= -1;
+                            usa[i].hp = USA_HP;
+                        } else {
+                            POINT+=1;
+                            usa[i].hp-=10;
+                        }
+                    }
+                }
+                if(is_collisioned(hikari_head, boss) && NOW == "PLAYING" && hikari_head_last_hit_frame + 75 < game.frame) {
+                    hikari_head_last_hit_frame = game.frame;
+                    if(boss.hp <= 10) {
+                        POINT+=100;
+                        NOW = "CLEAR";
+                        var lose_boss;
+                        if (STAGE == 1) {
+                            lose_boss = new Sakiwo();
+                        } else if (STAGE == 2) {
+                            lose_boss = new Shunsuke();
+                        } else if (STAGE == 3) {
+                            lose_boss = new Shingo();
+                        }
+                        lose_boss.x = boss.x;
+                        lose_boss.y = boss.y;
+                        scene.addChild(lose_boss);
+                        lose_boss.tl.moveTo(Math.floor(2*width*Math.random()), -lose_boss.height ,60).and().rotateBy(1800, 60).removeFromScene();
+                        boss.y = -boss.height;
+                        scene.removeChild(boss);
+                        clear.tl.hide().moveTo((width-start.width)/2, (height-start.height)/2, 1).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).removeFromScene();
+                        scene.addChild(clear);
+                    } else {
+                        POINT+=1;
+                        boss.hp-=10;
+                    }
+                }
+            }
             // hikari_fire vs usa & boss
             for (var i = 0; i < hikari_fire.length; i++) {
                 if (hikari_fire[i].y > 0) {
@@ -878,7 +928,7 @@ function shooting_start (game, scene) {
                         }
                     }
                     if(is_collisioned(hikari_fire[i], boss) && NOW == "PLAYING") {
-                        if(boss.hp <= 2) {
+                        if(boss.hp <= 1) {
                             POINT+=100;
                             NOW = "CLEAR";
                             var lose_boss;
@@ -911,6 +961,7 @@ function shooting_start (game, scene) {
                 if (usa[i].y > height - usa[i].y - hikari.y && NOW == "PLAYING") {
                     if (is_collisioned(usa[i], hikari)) {
                         scene.removeChild(hikari);
+                        scene.removeChild(hikari_head);
                         NOW = "GAMEOVER";
                         gameover.tl.hide().moveTo((width-start.width)/2, (height-start.height)/2, 1).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).removeFromScene();
                         scene.addChild(gameover);
@@ -976,7 +1027,6 @@ function shooting_start (game, scene) {
                     for(var i = 0; i < hikari_dead_ring.length; i++) {
                         hikari_dead_ring[i].x = hikari.x + (hikari.width - hikari_dead_ring[i].width)/2;
                         hikari_dead_ring[i].y = hikari.y + (hikari.height - hikari_dead_ring[i].height)/2
-                        console.log(Math.sin(Math.PI/2*i));
                         hikari_dead_ring[i].tl.moveBy(500*Math.sin(Math.PI/4*i), 500*Math.cos(Math.PI/4*i), 90);
                         scene.addChild(hikari_dead_ring[i]);
                     }

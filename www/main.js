@@ -714,7 +714,7 @@ window.onload = function() {
             } else {
                 if (audio_setagaya.ended || audio_setagaya.paused) { audio_setagaya.play() };
             }
-        
+
             if ((YouPointNum + UsaPointNum) == (SelectedCardNum/2) || is_over == 1) {
                 if (is_over == 0) {
                     if (YouPointNum > UsaPointNum) {
