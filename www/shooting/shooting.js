@@ -18,6 +18,7 @@ var USA_INTERVARL = 300;
 var NOW = "PLAYING";
 var STAGE = 1;
 var POINT = 0;
+var HIGH_SCORE_FLAG = 0;
 
 ////////////////////////////////
 // classes
@@ -67,32 +68,10 @@ Usa = enchant.Class.create(Sprite, {
 	initialize: function() {
 		var game = enchant.Game.instance;
 		Sprite.call(this, 150, 200);
-		this.image = game.assets['enemy_usa1.png'];
+		this.image = game.assets['shooting/enemy_usa1.png'];
         this.x = -this.width;
         this.y = -this.height;
         this.hp = USA_HP;
-	}
-});
-
-Usa2 = enchant.Class.create(Sprite, {
-	initialize: function() {
-		var game = enchant.Game.instance;
-		Sprite.call(this, 150, 200);
-		this.image = game.assets['enemy_usa2.png'];
-        this.x = -this.width;
-        this.y = -this.height;
-        this.hp = USA2_HP;
-	}
-});
-
-Usa3 = enchant.Class.create(Sprite, {
-	initialize: function() {
-		var game = enchant.Game.instance;
-		Sprite.call(this, 150, 200);
-		this.image = game.assets['enemy_usa3.png'];
-        this.x = -this.width;
-        this.y = -this.height;
-        this.hp = USA3_HP;
 	}
 });
 
@@ -135,7 +114,7 @@ Shingo = enchant.Class.create(Sprite, {
 		this.image = game.assets['shooting/shingo.png'];
         this.x = -this.width;
         this.y = -this.height;
-        this.hp = 5;
+        this.hp = 50;
 	}
 });
 
@@ -229,8 +208,8 @@ function is_collisioned (obj1, obj2) {
     }
 }
 
-function set_usa_motin(usa, s) {
-    usa.tl.moveTo(Math.floor(width/4 + width*Math.random() - usa.width), -usa.height, 1)
+function set_usa_motion(usa, s) {
+    usa.tl.moveTo(Math.floor(width/4 + width/2*Math.random() - usa.width), -usa.height, 1)
         .delay(Math.floor(USA_INTERVARL*Math.random()))
         .moveBy(s*width/4, width/8, 30, SIN_EASEINOUT)
         .moveBy(-s*width/2, width/4, 60, SIN_EASEINOUT)
@@ -240,20 +219,6 @@ function set_usa_motin(usa, s) {
         .moveBy(-s*width/2, width/4, 60, SIN_EASEINOUT)
         .moveBy(s*width/2, width/4, 60, SIN_EASEINOUT)
         .moveBy(-s*width/2, width/4, 60, SIN_EASEINOUT)
-        .loop();
-}
-
-function set_usa_motin2(usa) {
-    usa.tl.moveTo(Math.floor(width/4 + width*Math.random() - usa.width), -usa.height, 1)
-        .delay(Math.floor(USA_INTERVARL*Math.random()))
-        .moveTo(Math.floor(width/4 + width*Math.random() - usa.width), height, 200).and().rotateBy(720, 200)
-        .loop();
-}
-
-function set_usa_motin3(usa) {
-    usa.tl.moveTo(Math.floor(width/4 + width*Math.random() - usa.width), -usa.height, 1)
-        .delay(Math.floor(USA_INTERVARL*Math.random()))
-        .moveTo(Math.floor(width/4 + width*Math.random() - usa.width), height, 300, BOUNCE_EASEIN)
         .loop();
 }
 
@@ -287,8 +252,17 @@ function set_high_score(score) {
     localStorage.setItem('high_score', score);
 }
 
+function set_appeared(enemy) {
+    localStorage.setItem(enemy, 1);
+}
+
 function is_appeared(enemy) {
-    return 1;
+    var appeard = localStorage.getItem(enemy);
+    if(appeard) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 ////////////////////////////////
@@ -556,9 +530,117 @@ function how_menu(game, scene) {
     back_b.y = 0;
     back_b.x = width - back_b.width;
     back_b.addEventListener('touchstart', function() {
+        HIKARI_BIG_FIRE_NUM = 3;
         game.replaceScene(game.game2SelectScene());
     });
     scene.addChild(back_b);
+    
+    ///////////////////////////
+    // hikari
+    var hikari = new Hikari();
+    hikari.x = (width - hikari.width)/2;
+    hikari.y = height - hikari.height;
+    scene.addChild(hikari);
+    //hikari_head
+    var hikari_head = new Hikari_Head();
+    hikari_head.x = hikari.x;
+    hikari_head.y = hikari.y;
+    scene.addChild(hikari_head);
+    //hikari_head_light
+    var hikari_head_light = new Hikari_Head_Light();
+    hikari_head_light.x = -hikari_head_light.width;
+    hikari_head_light.y = -hikari_head_light.height;
+    scene.addChild(hikari_head_light);
+    // hikari head count
+    var hikari_head_count = 0;
+    // for DEBUG
+    scene.addEventListener("touchmove", function(e) {
+        if (Is_Touch != 0) {
+            hikari.x = e.localX - hikari.width/2;
+            if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
+                hikari_head.x = hikari.x;
+                hikari_head_light.x = hikari.x;
+            }
+        }
+    });
+    // hikari fire
+    var hikari_fire = new Array(HIKARI_FIRE_NUM);
+    for(var i = 0; i < hikari_fire.length; i++) {
+        hikari_fire[i] = new Hikari_Fire();
+    }
+    // hikari head switch
+    var hikari_head_switch = new Sprite(60, 60);
+    var hikari_head_last_hit_frame = 0;
+    hikari_head_switch.image = game.assets['shooting/switch.png'];
+    hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
+    hikari_head_switch.x = hikari_head_switch.width/2;
+    hikari_head_switch.y = height - hikari_head_switch.height*3/2;
+    hikari_head_switch.addEventListener('touchstart', function() {
+        if (hikari_head_count + 75 < game.frame && HIKARI_BIG_FIRE_NUM > 0) {
+            HIKARI_BIG_FIRE_NUM--;
+            hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
+            hikari_head_count = game.frame;
+            hikari_head.tl
+                .moveTo(hikari.x, hikari.y, 1)
+                .scaleBy(6/5, 5, SIN_EASEINOUT)
+                .scaleBy(5/6, 5, SIN_EASEINOUT)
+                .scaleBy(7/5, 5, SIN_EASEINOUT)
+                .scaleBy(5/7, 5, SIN_EASEINOUT)
+                .scaleBy(8/5, 5, SIN_EASEINOUT)
+                .moveTo(hikari.x, -width, 50, EXPO_EASEIN)
+                .scaleBy(5/8, 1);
+            hikari_head_light.tl
+                .moveTo(hikari.x, hikari.y, 1)
+                .scaleBy(3, 25)
+                .moveTo(hikari.x, -width, 50, EXPO_EASEIN)
+                .scaleBy(1/3, 1);
+        }
+    });
+    
+    var count = 0;
+    scene.addEventListener("enterframe", function(e) {
+        if(count % 10 == 0) {
+            var num = select_fire_num(hikari_fire);
+            if(num != -1) {
+                scene.removeChild(hikari_fire[num]);
+                hikari_fire[num].x = hikari.x + hikari.width/2 - hikari_fire[num].width/2;
+                hikari_fire[num].y = hikari.y;
+                hikari_fire[num].tl.moveY(-hikari_fire[num].height, 50);
+                scene.addChild(hikari_fire[num]);
+            }
+        }
+        count++;
+    });
+    scene.addChild(hikari_head_switch);
+    
+    /////////////////////////
+    // device motion
+    var angle  = 0;
+    var past_angle = new Array(10);
+    for (var i = 0; i < past_angle.length; i++) {
+        past_angle[i] = 0;
+    }
+    window.addEventListener("devicemotion", function(e){
+        for (var i = past_angle.length-1; i > 0; i--) {
+            past_angle[i] = past_angle[i-1];
+        }
+        past_angle[0] = (Math.floor(100*e.accelerationIncludingGravity.x)/100+angle)/2;
+        if (width/2/3*past_angle[0] > 290) {
+            past_angle[0] = 290*2*3/width;
+        } else if (width/2/3*past_angle[0] < -290) {
+            past_angle[0] = -290*2*3/width;
+        }
+        angle = 0;
+        for (var i = 0; i < past_angle.length; i++) {
+            angle += past_angle[i]/past_angle.length;
+        }
+        hikari.x = width/2 - hikari.width/2 + width/2/3*angle;
+        if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
+            hikari_head.x = hikari.x;
+            hikari_head_light.x = hikari.x;
+        }
+    }, false);
+    
     // how to play
     var how_pannel = new Sprite(500,500);
     how_pannel.image = game.assets['shooting/how_to_play.png'];
@@ -607,6 +689,7 @@ function shooting_start (game, scene) {
         point_digit[i].frame = 0;
         scene.addChild(point_digit[i]);
     }
+    HIGH_SCORE_FLAG = 0;
     
     ///////////////////////////
     // sign
@@ -650,7 +733,6 @@ function shooting_start (game, scene) {
         hikari_fire[i] = new Hikari_Fire();
     }
     // hikari head switch
-    var HIKARI_BIG_FIRE_NUM = 9;
     var hikari_head_switch = new Sprite(60, 60);
     var hikari_head_last_hit_frame = 0;
     hikari_head_switch.image = game.assets['shooting/switch.png'];
@@ -693,13 +775,13 @@ function shooting_start (game, scene) {
     for(var i = 0; i < usa.length; i++) {
         usa[i] = new Usa();
         if (i % 3 == 0) {
-            usa[i].image = game.assets['enemy_usa1.png'];
+            usa[i].image = game.assets['shooting/enemy_usa1.png'];
         } else if (i % 3 == 1) {
-            usa[i].image = game.assets['enemy_usa2.png'];
+            usa[i].image = game.assets['shooting/enemy_usa2.png'];
         } else if (i % 3 == 2) {
-            usa[i].image = game.assets['enemy_usa3.png'];
+            usa[i].image = game.assets['shooting/enemy_usa3.png'];
         }
-        set_usa_motin(usa[i], s);
+        set_usa_motion(usa[i], s);
         scene.addChild(usa[i]);
         s *= -1;
     }
@@ -710,13 +792,15 @@ function shooting_start (game, scene) {
     if (STAGE == 1) {
         boss = new Sakiwo();
         boss.tl.moveTo((width-boss.width)/2, -boss.height, 1)
-            .delay(500)
+            .delay(300)
             .moveTo((width-boss.width)/2, height/5, 100, ELASTIC_EASEOUT);
         scene.addChild(boss);
         var sakiwo_fire = new Array(SAKIWO_FIRE_NUM);
         for (var i = 0; i < sakiwo_fire.length; i++) {
             sakiwo_fire[i] = new Sakiwo_Fire();
         }
+        set_appeared('hikari');
+        set_appeared('usa');
     } else if (STAGE == 2) {
         boss = new Shunsuke();
         boss.x = -boss.width;
@@ -739,6 +823,18 @@ function shooting_start (game, scene) {
             airi_fire[i] = new Airi_Fire();
         }
     }
+    
+    /////////////////////////
+    // hikari big fire item
+    var item = new Sprite(60, 60);
+    item.image = game.assets['shooting/hikari_big_fire_item.png'];
+    item.x = -item.width;
+    item.y = -item.height;
+    item.tl.delay(Math.floor(Math.random()*500))
+        .moveTo(Math.floor(width*Math.random()), -item.height, 1)
+        .moveTo(Math.floor(width*Math.random()), height+item.height, 500);
+    scene.addChild(item);
+    var item_get = 0;
     
     /////////////////////////
     // device motion
@@ -779,8 +875,9 @@ function shooting_start (game, scene) {
         }
         if(count % 50 == 0) {
             // boss (shunsuke)
-            if (count > 100) {
+            if (count > 300) {
                 if (STAGE == 2) {
+                    set_appeared('shunsuke');
                     var shunsuke_x;
                     var shunsuke_y;
                     if (shunsuke_count == 0) {
@@ -804,9 +901,10 @@ function shooting_start (game, scene) {
         }
         if(count % 30 == 0) {
             // boss fire
-            if(count > 100) {
+            if(count > 300) {
                 if(NOW != "CLEAR") {
                     if (STAGE == 1) {
+                        set_appeared('sakiwo');
                         var num = select_fire_num(sakiwo_fire);
                         if(num != -1) {
                             scene.removeChild(sakiwo_fire[num]);
@@ -824,7 +922,8 @@ function shooting_start (game, scene) {
                             shingo_fire[num].tl.moveTo(Math.floor(width*Math.random()), height, 100);
                             scene.addChild(shingo_fire[num]);
                         }
-                        if (count == 120 && STAGE == 3) {
+                        if (count == 330 && STAGE == 3) {
+                            set_appeared('shingo');
                             scene.addChild(boss);
                             boss.tl.moveX(width-boss.width, 100, QUAD_EASEINOUT).moveX(0, 100, QUAD_EASEINOUT).loop();
                         }
@@ -840,7 +939,8 @@ function shooting_start (game, scene) {
                                 .and().rotateBy(720, 100);
                             scene.addChild(airi_fire[num]);
                         }
-                        if (count == 120 && STAGE == 4) {
+                        if (count == 360 && STAGE == 4) {
+                            set_appeared('airi');
                             scene.addChild(boss);
                             boss.tl.moveX(width-boss.width, 100, QUAD_EASEINOUT).moveX(0, 100, QUAD_EASEINOUT).loop();
                         }
@@ -861,6 +961,13 @@ function shooting_start (game, scene) {
             }
         }
         if(count % 2 == 0) {
+            // get item
+            if (is_collisioned(hikari, item) && item_get == 0) {
+                scene.removeChild(item);
+                HIKARI_BIG_FIRE_NUM++;
+                hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
+                item_get = 1;
+            }
             // hikari_big_fire vs usa & boss
             if (hikari_head_count + 75 > game.frame) {
                 for (var i = 0; i < usa.length; i++) {
@@ -871,11 +978,16 @@ function shooting_start (game, scene) {
                             var lose_usa = new Usa();
                             lose_usa.x = usa[i].x;
                             lose_usa.y = usa[i].y;
+                            if (i % 3 == 1) {
+                                lose_usa.image = game.assets['shooting/enemy_usa2.png'];
+                            } else if (i % 3 == 2) {
+                                lose_usa.image = game.assets['shooting/enemy_usa3.png'];
+                            }
                             scene.addChild(lose_usa);
                             lose_usa.tl.moveTo(Math.floor(2*(width-lose_usa.width)*Math.random()), -usa[0].height ,30).and().rotateBy(1800, 30).removeFromScene();
                             // usa clear
                             usa[i].tl.clear();
-                            set_usa_motin(usa[i], s);
+                            set_usa_motion(usa[i], s);
                             s *= -1;
                             usa[i].hp = USA_HP;
                         } else {
@@ -905,6 +1017,13 @@ function shooting_start (game, scene) {
                         scene.removeChild(boss);
                         clear.tl.hide().moveTo((width-start.width)/2, (height-start.height)/2, 1).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).removeFromScene();
                         scene.addChild(clear);
+                        if (STAGE == 4) {
+                            var next_stage_pannel = new Sprite(560, 150);
+                            next_stage_pannel.image = game.assets['shooting/all_stage_clear.png'];
+                            next_stage_pannel.x = (width - next_stage_pannel.width)/2;
+                            next_stage_pannel.y = height/4;
+                            scene.addChild(next_stage_pannel);
+                        }
                     } else {
                         POINT+=1;
                         boss.hp-=10;
@@ -922,11 +1041,16 @@ function shooting_start (game, scene) {
                                 var lose_usa = new Usa();
                                 lose_usa.x = usa[j].x;
                                 lose_usa.y = usa[j].y;
+                                if (j % 3 == 1) {
+                                    lose_usa.image = game.assets['shooting/enemy_usa2.png'];
+                                } else if (j % 3 == 2) {
+                                    lose_usa.image = game.assets['shooting/enemy_usa3.png'];
+                                }
                                 scene.addChild(lose_usa);
                                 lose_usa.tl.moveTo(Math.floor(2*(width-lose_usa.width)*Math.random()), -usa[0].height ,30).and().rotateBy(1800, 30).removeFromScene();
                                 // usa clear
                                 usa[j].tl.clear();
-                                set_usa_motin(usa[j], s);
+                                set_usa_motion(usa[j], s);
                                 s *= -1;
                                 usa[j].hp = USA_HP;
                             } else {
@@ -948,6 +1072,8 @@ function shooting_start (game, scene) {
                                 lose_boss = new Shunsuke();
                             } else if (STAGE == 3) {
                                 lose_boss = new Shingo();
+                            } else if (STAGE == 4) {
+                                lose_boss = new Airi();
                             }
                             lose_boss.x = boss.x;
                             lose_boss.y = boss.y;
@@ -957,6 +1083,13 @@ function shooting_start (game, scene) {
                             scene.removeChild(boss);
                             clear.tl.hide().moveTo((width-start.width)/2, (height-start.height)/2, 1).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).fadeIn(15).fadeOut(15).removeFromScene();
                             scene.addChild(clear);
+                            if (STAGE == 4) {
+                                var next_stage_pannel = new Sprite(560, 150);
+                                next_stage_pannel.image = game.assets['shooting/all_stage_clear.png'];
+                                next_stage_pannel.x = (width - next_stage_pannel.width)/2;
+                                next_stage_pannel.y = height/4;
+                                scene.addChild(next_stage_pannel);
+                            }
                         } else {
                             POINT++;
                             boss.hp--;
@@ -1040,6 +1173,13 @@ function shooting_start (game, scene) {
                         hikari_dead_ring[i].tl.moveBy(500*Math.sin(Math.PI/4*i), 500*Math.cos(Math.PI/4*i), 90);
                         scene.addChild(hikari_dead_ring[i]);
                     }
+                    if(HIGH_SCORE_FLAG == 1) {
+                        var high_score_string = new Sprite(280, 56);
+                        high_score_string.image = game.assets['shooting/high_score.png'];
+                        high_score_string.x = (width-high_score_string.width)/2;
+                        high_score_string.y = height/3;
+                        scene.addChild(high_score_string);
+                    }
                 }
                 gameover_count += 2;
                 if (gameover_count == 90) {
@@ -1047,6 +1187,8 @@ function shooting_start (game, scene) {
                     NOW = "PLAYING";
                     STAGE = 1;
                     POINT = 0;
+                    HIKARI_BIG_FIRE_NUM = 3;
+                    USA_NUM = 3;
                     game.replaceScene(game.game2SelectScene());
                 }
             } else if (NOW == "CLEAR") {
@@ -1056,12 +1198,16 @@ function shooting_start (game, scene) {
                     NOW = "PLAYING";
                     if (STAGE != 4) {
                         STAGE++;
+                    } else if (STAGE == 4) {
+                        STAGE = 1;
+                        USA_NUM += 3;
                     }
                     game.replaceScene(game.game2Scene());
                 }
             }
             update_point(POINT, point_digit);
             if (POINT > get_high_score()) {
+                HIGH_SCORE_FLAG = 1;
                 set_high_score(POINT);
             }
         }
