@@ -559,6 +559,16 @@ function how_menu(game, scene) {
         game.replaceScene(game.game2SelectScene());
     });
     scene.addChild(back_b);
+    // how to play
+    var how_pannel = new Sprite(500,500);
+    how_pannel.image = game.assets['shooting/how_to_play.png'];
+    how_pannel.x = width;
+    how_pannel.y = (height - how_pannel.height)/2;
+    how_pannel.tl.moveTo((width-how_pannel.width)/2, how_pannel.y, 30, BOUNCE_EASEOUT);
+    scene.addChild(how_pannel);
+    how_pannel.addEventListener('touchstart', function() {
+       game.replaceScene(game.game2SelectScene()); 
+    });
     return scene;
 }
 
