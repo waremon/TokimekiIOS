@@ -377,7 +377,7 @@ function unopend_card_num(card_usa_think, card_opend, card1_num) {
 
 window.onload = function() {
 	var game = new Game(width, height);
-	//game.fps = 10;
+	game.fps = 30;
     // for shinkeisuijaku
 	game.preload('card_front_s.png', 'card_front_s_32.png', 'card1_back_s_32.png',
      'card1_back_s.png', 'train_s.png', 'usa_s.png', 'top_sample.png', 'icon_shinkei.png',
@@ -389,7 +389,7 @@ window.onload = function() {
      'card_front_s_ip4.png', 'card1_back_s_ip4.png', 'card_front_s_32_ip4.png', 'card1_back_s_32_ip4.png',
      'icon_hikari.png');
     // for shooting
-    game.preload('shooting/fire_me.png', 'shooting/fire_enemy.png', 'shooting/shooting_back1.png',
+    game.preload('shooting/fire_me.png', 'shooting/fire_enemy.png',
     'shooting/shooting_back2.png', 'shooting/shooting_start.png',
     'shooting/shooting_game_over.png', 'shooting/shooting_clear.png', 'shooting/hikari.png', 'shooting/sakiwo.png',
     'shooting/shunsuke.png', 'shooting/shingo.png', 'shooting/airi.png', 'shooting/shingo_mini.png', 'shooting/airi_hat.png',
@@ -399,13 +399,14 @@ window.onload = function() {
     'shooting/shunsuke_pannel.png','shooting/shingo_pannel.png','shooting/airi_pannel.png', 'shooting/hikari_big_pannel.png',
     'shooting/usa_big_pannel.png', 'shooting/sakiwo_big_pannel.png', 'shooting/shunsuke_big_pannel.png', 'shooting/shingo_big_pannel.png',
     'shooting/airi_big_pannel.png', 'shooting/dead_ring.png', 'shooting/how_to_play.png', 'shooting/all_stage_clear.png',
-    'shooting/enemy_usa1.png', 'shooting/enemy_usa2.png', 'shooting/enemy_usa3.png', 'shooting/hikari_big_fire_item.png', 'shooting/back_space.png');
+    'shooting/enemy_usa1.png', 'shooting/enemy_usa2.png', 'shooting/enemy_usa3.png', 'shooting/hikari_big_fire_item.png');
 	game.onload = function() {
         audio_back.play();
 		game.pushScene(game.topScene());
 	};
 
 	game.topScene = function() {
+        game.fps = 30;
 		var scene = new Scene();
 		var bg = new Sprite(width, height);
 		bg.image = game.assets['top_sample.png'];
@@ -426,7 +427,8 @@ window.onload = function() {
 		return scene;
 	}
 
-	game.menuScene = function(){    
+	game.menuScene = function(){
+        game.fps = 30;
 		var scene = new Scene();
 		var bg = new Sprite(width, height);
 		bg.image = game.assets['top_sample.png'];
@@ -520,6 +522,7 @@ window.onload = function() {
 	};
     
     game.game1SelectScene = function() {
+        game.fps = 25;
         var scene = new Scene();
         
         var bg = new Sprite(width, height);
@@ -623,6 +626,7 @@ window.onload = function() {
     };
 
 	game.game1Scene = function() {
+        game.fps = 25;
         Game_Music = Math.floor(Math.random()*3);
         if(Game_Music == 0) {
             audio_flush.play();
@@ -896,24 +900,28 @@ window.onload = function() {
 	}
     
     game.game2SelectScene = function() {
+        game.fps = 30;
         var scene = new Scene();
         shooting_menu(game, scene);
         return scene;
     }
 
     game.game2EnemyScene = function() {
+        game.fps = 30;
         var scene = new Scene();
         enemy_menu(game, scene);
         return scene;
     }
     
     game.game2HowScene = function() {
+        game.fps = 30;
         var scene = new Scene();
         how_menu(game, scene);
         return scene;
     }
     
     game.game2Scene = function() {
+        game.fps = 30;
         var scene = new Scene();
         shooting_start(game, scene);
         return scene;

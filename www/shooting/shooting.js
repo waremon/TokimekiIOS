@@ -578,12 +578,12 @@ function how_menu(game, scene) {
         hikari_fire[i] = new Hikari_Fire();
     }
     // hikari head switch
-    var hikari_head_switch = new Sprite(60, 60);
+    var hikari_head_switch = new Sprite(90, 90);
     var hikari_head_last_hit_frame = 0;
     hikari_head_switch.image = game.assets['shooting/switch.png'];
     hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
-    hikari_head_switch.x = hikari_head_switch.width/2;
-    hikari_head_switch.y = height - hikari_head_switch.height*3/2;
+    hikari_head_switch.x = hikari_head_switch.width/3;
+    hikari_head_switch.y = height - hikari_head_switch.height*4/3;
     hikari_head_switch.addEventListener('touchstart', function() {
         if (hikari_head_count + 75 < game.frame && HIKARI_BIG_FIRE_NUM > 0) {
             HIKARI_BIG_FIRE_NUM--;
@@ -768,12 +768,12 @@ function shooting_start (game, scene) {
         hikari_fire[i] = new Hikari_Fire();
     }
     // hikari head switch
-    var hikari_head_switch = new Sprite(60, 60);
+    var hikari_head_switch = new Sprite(90, 90);
     var hikari_head_last_hit_frame = 0;
     hikari_head_switch.image = game.assets['shooting/switch.png'];
     hikari_head_switch.frame = HIKARI_BIG_FIRE_NUM;
-    hikari_head_switch.x = hikari_head_switch.width/2;
-    hikari_head_switch.y = height - hikari_head_switch.height*3/2;
+    hikari_head_switch.x = hikari_head_switch.width/3;
+    hikari_head_switch.y = height - hikari_head_switch.height*4/3;
     hikari_head_switch.addEventListener('touchstart', function() {
         if (hikari_head_count + 75 < game.frame && HIKARI_BIG_FIRE_NUM > 0) {
             HIKARI_BIG_FIRE_NUM--;
