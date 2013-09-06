@@ -386,6 +386,9 @@ function shooting_menu(game, scene) {
     
     var count = 0;
     scene.addEventListener("enterframe", function(e) {
+        if(audio_back.ended || audio_back.paused){
+            audio_back.play();
+        }
         if(count % 10 == 0) {
             var num = select_fire_num(hikari_fire);
             if(num != -1) {
@@ -517,6 +520,12 @@ function enemy_menu(game, scene) {
         scene.addChild(enemy_pannel[i]);
     }
     
+    scene.addEventListener("enterframe", function(e) {
+        if(audio_back.ended || audio_back.paused){
+            audio_back.play();
+        }
+    });
+    
     return scene;
 }
 
@@ -599,6 +608,9 @@ function how_menu(game, scene) {
     
     var count = 0;
     scene.addEventListener("enterframe", function(e) {
+        if(audio_back.ended || audio_back.paused){
+            audio_back.play();
+        }
         if(count % 10 == 0) {
             var num = select_fire_num(hikari_fire);
             if(num != -1) {
@@ -655,6 +667,18 @@ function how_menu(game, scene) {
 }
 
 function shooting_start (game, scene) {
+    // stop back music
+    audio_back.pause();
+    audio_back.currentTime = 0;
+    // set music
+    if(Shooting_Game_Music == 0) {
+        audio_gurasura.play();
+    } else if (Shooting_Game_Music == 1) {
+        audio_hutari.play();
+    } else if (Shooting_Game_Music == 2) {
+        audio_yozora.play();
+    }
+
     ///////////////////////////
     // background
     var bg1 = new Sprite(width, height);
@@ -673,6 +697,17 @@ function shooting_start (game, scene) {
     back_b.y = 0;
     back_b.x = width - back_b.width;
     back_b.addEventListener('touchstart', function() {
+        //music stop
+        if(Shooting_Game_Music == 0) {
+            audio_gurasura.pause();
+            audio_gurasura.currentTime = 0;
+        } else if (Shooting_Game_Music == 1) {
+            audio_hutari.pause();
+            audio_hutari.currentTime = 0;
+        } else if (Shooting_Game_Music == 2) {
+            audio_yozora.pause();
+            audio_yozora.currentTime = 0;
+        }
         game.replaceScene(game.game2SelectScene());
     });
     scene.addChild(back_b);
@@ -961,6 +996,29 @@ function shooting_start (game, scene) {
             }
         }
         if(count % 2 == 0) {
+            // set music
+            if(Shooting_Game_Music == 0) {
+                if (audio_gurasura.paused) {
+                    audio_gurasura.play();
+                } else if (audio_gurasura.ended) {
+                    Shooting_Game_Music = 1;
+                    audio_hutari.play();
+                }
+            } else if (Shooting_Game_Music == 1) {
+                if (audio_hutari.paused) {
+                    audio_hutari.play();
+                } else if (audio_hutari.ended) {
+                    Shooting_Game_Music = 2;
+                    audio_yozora.play();
+                }
+            } else if (Shooting_Game_Music == 2) {
+                if (audio_yozora.paused) {
+                    audio_yozora.play();
+                } else if (audio_yozora.ended) {
+                    Shooting_Game_Music = 0;
+                    audio_gurasura.play();
+                }
+            }
             // get item
             if (is_collisioned(hikari, item) && item_get == 0) {
                 scene.removeChild(item);
@@ -1189,6 +1247,17 @@ function shooting_start (game, scene) {
                     POINT = 0;
                     HIKARI_BIG_FIRE_NUM = 3;
                     USA_NUM = 3;
+                    //music stop
+                    if(Shooting_Game_Music == 0) {
+                        audio_gurasura.pause();
+                        audio_gurasura.currentTime = 0;
+                    } else if (Shooting_Game_Music == 1) {
+                        audio_hutari.pause();
+                        audio_hutari.currentTime = 0;
+                    } else if (Shooting_Game_Music == 2) {
+                        audio_yozora.pause();
+                        audio_yozora.currentTime = 0;
+                    }
                     game.replaceScene(game.game2SelectScene());
                 }
             } else if (NOW == "CLEAR") {

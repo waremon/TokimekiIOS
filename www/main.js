@@ -1,11 +1,18 @@
 enchant();
 
 var winHeight = window.innerHeight;
+// music
+// shinkei
 var audio_back = new Audio('cosmo.mp3');
 var audio_flush = new Audio('flush_back.mp3');
 var audio_baby = new Audio('hey_baby.mp3');
 var audio_setagaya = new Audio('setagaya.mp3');
 var Game_Music = -1;
+// shooting
+var audio_gurasura = new Audio('shooting/gurasura.mp3');
+var audio_hutari = new Audio('shooting/hutari.mp3');
+var audio_yozora = new Audio('shooting/yozora.mp3');
+var Shooting_Game_Music = Math.floor(3*Math.random());
 
 var width = 640;
 var height = 820;
@@ -379,7 +386,8 @@ window.onload = function() {
      'back_sinkei.png', 'which_usa.png', 'which_card.png', 'point_back.png', 'points.png',
      'enemy_usa1.png', 'enemy_usa2.png', 'enemy_usa3.png', 'draw.png', 'you_win.png', 'you_lose.png',
      'icon_homepage.png', 'icon_facebook.png', 'icon_twitter.png', 'back.png',
-     'card_front_s_ip4.png', 'card1_back_s_ip4.png', 'card_front_s_32_ip4.png', 'card1_back_s_32_ip4.png');
+     'card_front_s_ip4.png', 'card1_back_s_ip4.png', 'card_front_s_32_ip4.png', 'card1_back_s_32_ip4.png',
+     'icon_hikari.png');
     // for shooting
     game.preload('shooting/fire_me.png', 'shooting/fire_enemy.png', 'shooting/shooting_back1.png',
     'shooting/shooting_back2.png', 'shooting/shooting_start.png',
@@ -449,7 +457,7 @@ window.onload = function() {
         scene.addChild(icon_shinkei);
         
         var icon_shooting = new Icon();
-        icon_shooting.image = game.assets['icon_shinkei.png'];
+        icon_shooting.image = game.assets['icon_hikari.png'];
         icon_shooting.x = icon_facebook.x;
         icon_shooting.y = icon_facebook.y + ICON_HEIGHT;
         scene.addChild(icon_shooting);
