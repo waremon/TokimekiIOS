@@ -34,11 +34,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "www/shooting/shooting.js"
-         timestampString = "400086734.282809"
+         timestampString = "400179560.388053"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "670"
-         endingLineNumber = "670"
+         startingLineNumber = "671"
+         endingLineNumber = "671"
          landmarkName = "shooting_start"
          landmarkType = "7">
       </FileBreakpoint>

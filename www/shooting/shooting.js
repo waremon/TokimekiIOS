@@ -2,7 +2,7 @@
 // constants
 ////////////////////////////////
 
-var Is_Touch = 0;
+//var Is_Touch = 0;
 var HIKARI_FIRE_NUM = 10;
 var HIKARI_BIG_FIRE_NUM = 3;
 var SAKIWO_FIRE_NUM = 10;
@@ -29,12 +29,12 @@ Hikari = enchant.Class.create(Sprite, {
 		var game = enchant.Game.instance;
 		Sprite.call(this, 100, 123);
 		this.image = game.assets['shooting/hikari.png'];
-		this.addEventListener('touchstart', function() {
-            Is_Touch = 1;
-		});
-        this.addEventListener('touchend', function() {
-            Is_Touch = 0;
-		});
+//		this.addEventListener('touchstart', function() {
+//            Is_Touch = 1;
+//		});
+//        this.addEventListener('touchend', function() {
+//            Is_Touch = 0;
+//		});
 	}
 });
 
@@ -356,11 +356,11 @@ function shooting_menu(game, scene) {
         hikari_fire[i] = new Hikari_Fire();
     }
     // for DEBUG
-    scene.addEventListener("touchmove", function(e) {
-        if (Is_Touch != 0) {
-            hikari.x = e.localX - hikari.width/2;
-        }
-    });
+//    scene.addEventListener("touchmove", function(e) {
+//        if (Is_Touch != 0) {
+//            hikari.x = e.localX - hikari.width/2;
+//        }
+//    });
     // device motion
     var angle  = 0;
     var past_angle = new Array(10);
@@ -563,15 +563,15 @@ function how_menu(game, scene) {
     // hikari head count
     var hikari_head_count = 0;
     // for DEBUG
-    scene.addEventListener("touchmove", function(e) {
-        if (Is_Touch != 0) {
-            hikari.x = e.localX - hikari.width/2;
-            if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
-                hikari_head.x = hikari.x;
-                hikari_head_light.x = hikari.x;
-            }
-        }
-    });
+//    scene.addEventListener("touchmove", function(e) {
+//        if (Is_Touch != 0) {
+//            hikari.x = e.localX - hikari.width/2;
+//            if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
+//                hikari_head.x = hikari.x;
+//                hikari_head_light.x = hikari.x;
+//            }
+//        }
+//    });
     // hikari fire
     var hikari_fire = new Array(HIKARI_FIRE_NUM);
     for(var i = 0; i < hikari_fire.length; i++) {
@@ -661,6 +661,7 @@ function how_menu(game, scene) {
     how_pannel.tl.moveTo((width-how_pannel.width)/2, how_pannel.y, 30, BOUNCE_EASEOUT);
     scene.addChild(how_pannel);
     how_pannel.addEventListener('touchstart', function() {
+        HIKARI_BIG_FIRE_NUM = 3;
        game.replaceScene(game.game2SelectScene()); 
     });
     return scene;
@@ -753,15 +754,15 @@ function shooting_start (game, scene) {
     // hikari head count
     var hikari_head_count = 0;
     // for DEBUG
-    scene.addEventListener("touchmove", function(e) {
-        if (Is_Touch != 0) {
-            hikari.x = e.localX - hikari.width/2;
-            if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
-                hikari_head.x = hikari.x;
-                hikari_head_light.x = hikari.x;
-            }
-        }
-    });
+//    scene.addEventListener("touchmove", function(e) {
+//        if (Is_Touch != 0) {
+//            hikari.x = e.localX - hikari.width/2;
+//            if (hikari_head_count == 0 || game.frame < hikari_head_count + 40) {
+//                hikari_head.x = hikari.x;
+//                hikari_head_light.x = hikari.x;
+//            }
+//        }
+//    });
     // hikari fire
     var hikari_fire = new Array(HIKARI_FIRE_NUM);
     for(var i = 0; i < hikari_fire.length; i++) {
