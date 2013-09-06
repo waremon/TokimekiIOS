@@ -1067,6 +1067,8 @@ function shooting_start (game, scene) {
                             lose_boss = new Shunsuke();
                         } else if (STAGE == 3) {
                             lose_boss = new Shingo();
+                        } else if (STAGE == 4) {
+                            lose_boss = new Airi();
                         }
                         lose_boss.x = boss.x;
                         lose_boss.y = boss.y;
